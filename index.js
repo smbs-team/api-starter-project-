@@ -8,7 +8,6 @@ dotenv.config({ path: './config.env' });
 //Import controllers
 const securityController = require('./controllers/securityController');
 const usersController = require('./controllers/userController');
-const employeesController = require('./controllers/employeesController');
 
 //Import custom middlewares
 const verifyToken = require('./middlewares/verifyToken');
@@ -44,7 +43,6 @@ app.use((req, res, next) => {
 app.use('/api', securityController);
 app.use('/api/users', verifyToken);
 app.use('/api/users', usersController);
-app.use('/api/employees', employeesController);
 
 //Error handling middleware
 app.use((err, req, res, next) => {
