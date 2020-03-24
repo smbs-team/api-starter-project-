@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+
+const swaggerJSDoc = require('swagger-jsdoc');
 const cors = require('cors');
 const path = require('path');
 const dotenv = require('dotenv');
@@ -18,10 +20,34 @@ global.__appRoot = path.resolve(__dirname);
 //Initialize express
 const app = express();
 
+//Swagger config
+const swaggerDefinition = {
+  info: {
+    title: "API Title",
+    version: '1.0.0',
+    description: "API Description",
+    host: `${process.env.HOST}:${process.env.PORT}`,
+    basePath: "/"
+  }
+}
+
+const swaggerOptions = {
+  swaggerDefinition,
+  apis: ['./controllers/*.js']
+}
+
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+
+app.get('/api/swagger.json', (req, res) => {
+  res.header('Content-Type', 'application/json');
+  return res.send(swaggerSpec);
+});
+
 //Base middlewares for express
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
 //Default headers
 app.use((req, res, next) => {
@@ -41,7 +67,7 @@ app.use((req, res, next) => {
 
 //Controllers
 app.use('/api', securityController);
-app.use('/api/users', verifyToken);
+// app.use('/api/users', verifyToken);
 app.use('/api/users', usersController);
 
 //Error handling middleware
