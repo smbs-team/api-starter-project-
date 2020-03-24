@@ -75,10 +75,11 @@ app.use((err, req, res, next) => {
     console.log(err);
     res.status(err.status || 500)
     res.send({
-      message: err.message      
+      error: err.message      
     })
 });
 
 app.listen(process.env.PORT || 3000, () => {
-    console.log(`Server is running on port ${process.env.PORT || 3000}`);
+  console.clear();
+  console.log(`Server is running on port ${process.env.PORT || 3000}`);
 });

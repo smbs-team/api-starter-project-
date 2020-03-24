@@ -1,7 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const models = require('../models');
+
 const wrapper = require('../middlewares/errorWrapper');
+const validator = require('../middlewares/schemaValidator');
+const userSchemas = require('../schemas/userSchemas');
 
 /**
  * @swagger
@@ -88,7 +91,7 @@ router.get('/:id', wrapper(async(req, res) => {
  *       200:
  *         description: Successfully created
  */
-router.post('/create', wrapper(async(req, res) => {
+router.post('/create', validator(userSchemas.userCreation), wrapper(async(req, res) => {
     const newUser = await models.User.insert(req.body);
     return res.status(200).send({ data: newUser });
 }));
