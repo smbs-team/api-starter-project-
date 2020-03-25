@@ -1,4 +1,5 @@
-const express = require("express");
+const express = require('express');
+
 const router = express.Router();
 const models = require('../models');
 
@@ -39,7 +40,7 @@ const userSchemas = require('../schemas/userSchemas');
  *         schema:
  *           $ref: '/api/swagger.json#paths/definitions/user'
  */
-router.get('/', wrapper( async (req, res) => {
+router.get('/', wrapper(async (req, res) => {
     const users = await models.User.fetchAll();
     return res.status(200).send({ data: users });
 }));
@@ -65,8 +66,7 @@ router.get('/', wrapper( async (req, res) => {
  *         schema:
  *           $ref: '/api/swagger.json#paths/definitions/user'
  */
-router.get('/:id', wrapper(async(req, res) => {
-    console.log(req.params);
+router.get('/:id', wrapper(async (req, res) => {
     const user = await models.User.fetchById(req.params.id);
     return res.status(200).send({ data: user });
 }));
@@ -91,7 +91,7 @@ router.get('/:id', wrapper(async(req, res) => {
  *       200:
  *         description: Successfully created
  */
-router.post('/create', validator(userSchemas.userCreation), wrapper(async(req, res) => {
+router.post('/create', validator(userSchemas.userCreation), wrapper(async (req, res) => {
     const newUser = await models.User.insert(req.body);
     return res.status(200).send({ data: newUser });
 }));
@@ -115,7 +115,7 @@ router.post('/create', validator(userSchemas.userCreation), wrapper(async(req, r
  *       200:
  *         description: Successfully deleted
  */
-router.post('/delete/:id', wrapper(async(req, res) => {
+router.post('/delete/:id', wrapper(async (req, res) => {
     const deleted = await models.User.remove(req.params.id);
     return res.status(200).send({ data: deleted });
 }));

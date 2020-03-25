@@ -5,81 +5,86 @@ const swaggerJSDoc = require('swagger-jsdoc');
 const cors = require('cors');
 const path = require('path');
 const dotenv = require('dotenv');
+
 dotenv.config({ path: './config.env' });
 
-//Import controllers
+// Import controllers
 const securityController = require('./controllers/securityController');
 const usersController = require('./controllers/userController');
 
-//Import custom middlewares
+// Import custom middlewares
 const verifyToken = require('./middlewares/verifyToken');
 
-//Keep reference of root path
+// Keep reference of root path
 global.__appRoot = path.resolve(__dirname);
 
-//Initialize express
+// Initialize express
 const app = express();
 
-//Swagger config
+// Swagger config
 const swaggerDefinition = {
   info: {
-    title: "API Title",
+    title: 'API Title',
     version: '1.0.0',
-    description: "API Description",
+    description: 'API Description',
     host: `${process.env.HOST}:${process.env.PORT}`,
-    basePath: "/"
-  }
-}
+    basePath: '/',
+  },
+};
 
 const swaggerOptions = {
   swaggerDefinition,
-  apis: ['./controllers/*.js']
-}
+  apis: ['./controllers/*.js'],
+};
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
-app.get('/api/swagger.json', (req, res) => {
+app.get('/api/swagger.json', (_req, res) => {
   res.header('Content-Type', 'application/json');
   return res.send(swaggerSpec);
 });
 
-//Base middlewares for express
+// Base middlewares for express
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//Default headers
+// Default headers
+// eslint-disable-next-line consistent-return
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
+    res.header('Access-Control-Allow-Origin', '*');
     res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept, Authorization',
     );
-  
-    if (req.method === "OPTIONS") {
-      res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
+
+    if (req.method === 'OPTIONS') {
+      res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
       return res.status(200).json({});
     }
-  
+
     next();
 });
 
-//Controllers
+// Controllers
 app.use('/api', securityController);
-// app.use('/api/users', verifyToken);
+app.use('/api/users', verifyToken);
 app.use('/api/users', usersController);
 
-//Error handling middleware
-app.use((err, req, res, next) => {
-    console.log(err);
-    res.status(err.status || 500)
+// Error handling middleware
+// eslint-disable-next-line no-unused-vars
+app.use((err, _req, res, _next) => {
+    res.status(err.status || 500);
     res.send({
-      error: err.message      
-    })
+      error: err.message,
+    });
 });
 
 app.listen(process.env.PORT || 3000, () => {
+  // eslint-disable-next-line no-console
   console.clear();
+
+  // eslint-disable-next-line no-console
   console.log(`Server is running on port ${process.env.PORT || 3000}`);
 });

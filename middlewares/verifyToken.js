@@ -2,21 +2,22 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 
 const wrapper = require('./errorWrapper');
+const ValidationError = require('../helpers/ValidationError');
 
-const verifyToken = wrapper((req, res, next) => {
-    const bearerHeader = req.headers['authorization'];
+const verifyToken = wrapper((req, _res, next) => {
+    const bearerHeader = req.headers.authorization;
 
-    if(!bearerHeader) {
-        throw { status: 400, message: "Invalid request" };
+    if (!bearerHeader) {
+        throw new ValidationError('Invalid request', 400);
     }
 
     const token = bearerHeader.split(' ')[1];
     const publicKey = fs.readFileSync(`${__appRoot}/public.key`, 'utf8');
 
     try {
-        jwt.verify(token, publicKey, {algorithm:  ["RS256"], expiresIn:  "1h",});        
+        jwt.verify(token, publicKey, { algorithm: ['RS256'], expiresIn: '1h' });
     } catch (error) {
-        throw { status: 403, message: "Invalid token" }        
+        throw new ValidationError('Invalid token', 403);
     }
 
     next();
