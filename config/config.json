@@ -1,12 +1,11 @@
 {
   "development": {
-    "username": "db_user",
-    "password": "password",
+    "username": "postgres",
+    "password": "postgres",
     "database": "db_name",
     "host": "127.0.0.1",
     "port": 5432,
     "dialect": "postgres",
-    "operatorsAliases": false,
     "freezeTableName": true
   },
   "test": {
