@@ -1,5 +1,7 @@
 const express = require('express');
+const GraphHTTP = require('express-graphql');
 const bodyParser = require('body-parser');
+const depthLimit = require('graphql-depth-limit');
 
 const swaggerJSDoc = require('swagger-jsdoc');
 const cors = require('cors');
@@ -11,6 +13,9 @@ dotenv.config({ path: './config.env' });
 // Import controllers
 const securityController = require('./controllers/securityController');
 const usersController = require('./controllers/userController');
+
+// Import graphql schema
+const Schema = require('./graphql/schema.js');
 
 // Import custom middlewares
 const verifyToken = require('./middlewares/verifyToken');
@@ -80,6 +85,21 @@ app.use((err, _req, res, _next) => {
       error: err.message,
     });
 });
+
+app.use(
+  '/graphql',
+  verifyToken,
+  GraphHTTP((req) => ({
+    schema: Schema,
+    pretty: true,
+    graphiql: true,
+    context: {
+      user: req.user,
+      // SECRET
+    },
+    validationRules: [depthLimit(10)],
+  })),
+);
 
 app.listen(process.env.PORT || 3000, () => {
   // eslint-disable-next-line no-console
