@@ -10,7 +10,6 @@ const ValidationError = require('../helpers/ValidationError');
 
 router.post('/login', wrapper(async (req, res) => {
     const { email, password } = req.body;
-
     if (!email || !password) {
         throw new ValidationError('Email and Password are required', 422);
     }
